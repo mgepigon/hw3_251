@@ -4,11 +4,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -54,13 +57,11 @@ public class CardListActivity extends AppCompatActivity {
         }
     };
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_card_list);
-
-        //Create notification channel
-        initChannels(getApplicationContext());
 
         // Ensure that we have Internet permissions
         int internetPermissionGranted = ActivityCompat.checkSelfPermission(this, Manifest.permission.INTERNET);
@@ -72,13 +73,6 @@ public class CardListActivity extends AppCompatActivity {
         //Creation of activity views
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        //Build notification
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "default")
-                .setSmallIcon(R.drawable.exclamation)
-                .setContentTitle("WebRequest")
-                .setContentText("Testing")
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
         //Card storage
         cardArray = new ArrayList<String>();
@@ -107,11 +101,9 @@ public class CardListActivity extends AppCompatActivity {
                     // [TODO] Send the card information back to the web API. Reference the
                     // WriteWebServer constructor to know what information must be passed.
 
-                    chosenCard = position;
                     // Get the card number from the cardArray based on the position in the array.
-                    WriteWebServer web_write = new WriteWebServer(getApplicationContext(), cardArray.get(chosenCard));
+                    WriteWebServer web_write = new WriteWebServer(getApplicationContext(), cardArray.get(position));
                     web_write.execute("");
-                    Toast.makeText(CardListActivity.this, "Sent Card Information", Toast.LENGTH_SHORT).show();
 
                     // Reset the stored information from the last API call
                     ReadWebServer.resetLastAmount();
@@ -119,21 +111,41 @@ public class CardListActivity extends AppCompatActivity {
             }
         });
 
+
+        //Alert Dialog
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which){
+                    case DialogInterface.BUTTON_POSITIVE:
+                        //Yes button clicked -- remove the card from array and shared preferences
+                        SharedPreferences card = getSharedPreferences("Cards", Context.MODE_PRIVATE);
+                        card.edit().remove(cardArray.get(chosenCard)).apply();
+
+                        cardArray.remove(chosenCard);
+                        adapter.notifyDataSetChanged();
+                        break;
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        //No button clicked -- nothing happens
+                        break;
+                }
+            }
+        };
+
+        cardList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                //Creates a alert
+                chosenCard = position;
+                AlertDialog.Builder builder = new AlertDialog.Builder(CardListActivity.this);
+                builder.setMessage("Delete this card?").setPositiveButton("Yes", dialogClickListener)
+                        .setNegativeButton("No", dialogClickListener).show();
+                return true;
+            }
+        });
+
         // Start the timer to poll the webserver every 5000 ms
         timer.schedule(task, 0, 5000);
-    }
-
-    public void initChannels(Context context) {
-        if (Build.VERSION.SDK_INT < 26) {
-            return;
-        }
-        NotificationManager notificationManager =
-                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        NotificationChannel channel = new NotificationChannel("default",
-                "Channel name",
-                NotificationManager.IMPORTANCE_DEFAULT);
-        channel.setDescription("Channel description");
-        notificationManager.createNotificationChannel(channel);
     }
 
     @Override

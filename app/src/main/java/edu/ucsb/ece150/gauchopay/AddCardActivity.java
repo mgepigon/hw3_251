@@ -30,22 +30,13 @@ public class AddCardActivity extends AppCompatActivity {
         // a field for CVV. ("Requirement" DOES NOT mean "Valid".)
         final CardForm cardForm = findViewById(R.id.card_form);
         cardForm.cardRequired(true)
-                .expirationRequired(true)
-                .cvvRequired(true)
-                .postalCodeRequired(true)
+                //.expirationRequired(true)
+                //.cvvRequired(true)
+                //.postalCodeRequired(true)
                 .actionLabel("Add Card")
                 .setup(this);
 
         // [TODO] Implement a method of getting card information and sending it to the main activity.
-        // You will want to add a new component onto this activity's layout so you can perform this
-        // task as a result of a button click.
-        //
-        //  Get card information from the CardForm view. Refer to the library website
-        // https://github.com/braintree/android-card-form/blob/master/README.md.
-        //
-        // This information has to be sent back to the CardListActivity (to update the
-        // list of cards).
-
         FloatingActionButton accept = findViewById(R.id.accept);
         accept.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -53,7 +44,6 @@ public class AddCardActivity extends AppCompatActivity {
                 SharedPreferences card = getSharedPreferences("Cards", Context.MODE_PRIVATE);
                 //Store card number (key is its own unique number)
                 card.edit().putString(cardForm.getCardNumber(), cardForm.getCardNumber()).apply();
-
                 Toast.makeText(AddCardActivity.this, "New Card Added", Toast.LENGTH_SHORT).show();
 
                 //Go back to home screen
