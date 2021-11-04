@@ -3,11 +3,16 @@ package edu.ucsb.ece150.gauchopay;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
 import com.braintreepayments.cardform.view.CardForm;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import android.content.SharedPreferences;
+
+import android.widget.Toast;
 
 public class AddCardActivity extends AppCompatActivity {
 
@@ -40,5 +45,22 @@ public class AddCardActivity extends AppCompatActivity {
         //
         // This information has to be sent back to the CardListActivity (to update the
         // list of cards).
+
+        FloatingActionButton accept = findViewById(R.id.accept);
+        accept.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SharedPreferences card = getSharedPreferences("Cards", Context.MODE_PRIVATE);
+                //Store card number (key is its own unique number)
+                card.edit().putString(cardForm.getCardNumber(), cardForm.getCardNumber()).apply();
+
+                Toast.makeText(AddCardActivity.this, "New Card Added", Toast.LENGTH_SHORT).show();
+
+                //Go back to home screen
+                Intent toCardList = new Intent(AddCardActivity.this, CardListActivity.class);
+                startActivity(toCardList);
+            }
+        });
+
     }
 }

@@ -3,13 +3,14 @@ package edu.ucsb.ece150.gauchopay;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class WriteWebServer extends AsyncTask<String, String, String> {
-    private static final String myUserID = ""; // [TODO] Fill in your ID. Your PERM number is ideal since it is a unique code that only you have access to.
+    private static final String myUserID = "601162"; // [TODO] Fill in your ID. Your PERM number is ideal since it is a unique code that only you have access to.
 
     private URL urlObject;
     private String cardNumber;
@@ -56,5 +57,8 @@ public class WriteWebServer extends AsyncTask<String, String, String> {
 
         // [TODO] Let the user know that the transaction is complete. We don't need to do anything
         // with the result since we are only SENDING information to the web server.
+
+        Toast.makeText(callingContext.get(), "Completed Transaction", Toast.LENGTH_SHORT).show();
+
     }
 }

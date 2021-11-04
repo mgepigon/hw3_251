@@ -20,6 +20,19 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
         android:layout_marginTop="?attr/actionBarSize"
-        android:layout_marginRight="16dp" />
+        android:layout_marginRight="16dp" >
+
+    </com.braintreepayments.cardform.view.CardForm>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/accept"
+        android:layout_width="85dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:clickable="true"
+        android:contentDescription="@string/addcard"
+        android:focusable="true"
+        app:srcCompat="@android:drawable/ic_menu_add"
+        tools:ignore="SpeakableTextPresentCheck" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
